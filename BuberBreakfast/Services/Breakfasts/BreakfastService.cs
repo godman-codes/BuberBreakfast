@@ -10,6 +10,8 @@ namespace BuberBreakfast.Services.Breakfasts
     {
         private static readonly Dictionary<Guid, Breakfast> _breakfasts = new();
         // this dictionary is To Only pair id and name 
+        // we put static because we don't want the dictionary created on every request
+
         public void CreateBreakfast(Breakfast breakfast)
         // this method overrides the interface class create Breakfast method
         {

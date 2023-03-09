@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 {
     builder.Services.AddControllers();
-    builder.Services.AddSingleton<IBreakfastService, BreakfastService>();
+    builder.Services.AddScoped<IBreakfastService, BreakfastService>();
     // the above line defines how the breakfast controller object is created and what is passed to it 
     // because without it the application wont know what to pass as parameter to the newly created 
     // breakfast controller object
