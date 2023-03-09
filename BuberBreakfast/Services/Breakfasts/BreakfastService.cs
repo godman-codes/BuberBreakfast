@@ -13,11 +13,12 @@ namespace BuberBreakfast.Services.Breakfasts
         // this dictionary is To Only pair id and name 
         // we put static because we don't want the dictionary created on every request
 
-        public void CreateBreakfast(Breakfast breakfast)
+        public ErrorOr<Created> CreateBreakfast(Breakfast breakfast)
         // this method overrides the interface class create Breakfast method
         {
             _breakfasts.Add(breakfast.Id, breakfast);
             // add the breakfast object and id to the dictionary
+            return Result.Created;
         }
         public ErrorOr<Breakfast> GetBreakfast(Guid id)
         {
@@ -34,14 +35,21 @@ namespace BuberBreakfast.Services.Breakfasts
             // error.Breakfast class
             return Errors.Breakfast.NotFound;
         }
-        public void UpsertBreakfast(Breakfast breakfast)
+        public ErrorOr<UpsertedBreakfastResult> UpsertBreakfast(Breakfast breakfast)
         {
+            var isNewlyCreated = !_breakfasts.ContainsKey(breakfast.Id);
             _breakfasts[breakfast.Id] = breakfast;
+            return new UpsertedBreakfastResult(isNewlyCreated);
         }
 
-        public void DeleteBreakfast(Guid id)
+        public ErrorOr<Deleted> DeleteBreakfast(Guid id)
         {
-            _breakfasts.Remove(id);
+            if (_breakfasts.TryGetValue(id, out var breakfast))
+            {
+                _breakfasts.Remove(id);
+                return Result.Deleted;
+            }
+            return Errors.Breakfast.NotFound;
         }
     }
 }

@@ -4,7 +4,7 @@ PUT http://localhost:5058/breakfast/{{id}}
 Content-Type: application/json
 
 {
-   "name": "Vegan Moonlight",
+   "name": 1,
    "description": "Vegan everything! Join us for a healthy Dinner..",
    "startDateTime": "2022-04-08T08:00:00",
    "endDateTime": "2022-04-08T11:00:00",

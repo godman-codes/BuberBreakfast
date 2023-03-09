@@ -38,26 +38,13 @@ namespace BuberBreakfast.Controllers
             );
             // TODO: save breakfast to database
 
-            _breakfastService.CreateBreakfast(breakfast);
+            ErrorOr<Created> createdBreakfastResult = _breakfastService.CreateBreakfast(breakfast);
             // we call the createBreakfast method of the IBreakfastService and 
             // pass the new breakfast collected from the request
 
-            var response = new BreakfastResponse(
-                breakfast.Id,
-                breakfast.Name,
-                breakfast.Description,
-                breakfast.StartDateTime,
-                breakfast.EndDateTime,
-                breakfast.LastModifiedDateTime,
-                breakfast.Savory,
-                breakfast.Sweet
-            );
-            return CreatedAtAction(
-                actionName: nameof(GetBreakfast),
-                routeValues: new { id = breakfast.Id },
-                value: response
-                );
+            return createdBreakfastResult.Match(Created => CreatedAsGetBreakfast(breakfast), errors => Problem(errors));
         }
+
 
         [HttpGet("{id:guid}")]
         public IActionResult GetBreakfast(Guid id)
@@ -87,20 +74,6 @@ namespace BuberBreakfast.Controllers
             // return Ok(response);
         }
 
-        private static BreakfastResponse MapBreakfastResponse(Breakfast breakfast)
-        {
-            // extract method from the view
-            return new BreakfastResponse(
-                            breakfast.Id,
-                            breakfast.Name,
-                            breakfast.Description,
-                            breakfast.StartDateTime,
-                            breakfast.EndDateTime,
-                            breakfast.LastModifiedDateTime,
-                            breakfast.Savory,
-                            breakfast.Sweet
-                        );
-        }
 
         [HttpPut("{id:guid}")]
         public IActionResult UpsertBreakfast(Guid id, UpsertBreakfastRequest request)
@@ -116,18 +89,46 @@ namespace BuberBreakfast.Controllers
                 request.Savory,
                 request.Sweet
             );
-            _breakfastService.UpsertBreakfast(breakfast);
+            ErrorOr<UpsertedBreakfastResult> upsertBreakfastResult = _breakfastService.UpsertBreakfast(breakfast);
 
             // TODO: return 201 if a new breakfast was created
-            return NoContent();
+            return upsertBreakfastResult.Match(
+                upserted => upserted.isNewlyCreated ? CreatedAsGetBreakfast(breakfast) : NoContent(),
+                errors => Problem(errors)
+                );
         }
 
         [HttpDelete("{id:guid}")]
         public IActionResult DeleteBreakfast(Guid id)
         {
             Console.WriteLine("Deleting");
-            _breakfastService.DeleteBreakfast(id);
-            return NoContent();
+            // var DeletedBreakfastResult = _breakfastService.DeleteBreakfast(id);
+            ErrorOr<Deleted> DeletedBreakfastResult = _breakfastService.DeleteBreakfast(id);
+
+            // return NoContent();
+            return DeletedBreakfastResult.Match(Deleted => NoContent(), errors => Problem(errors));
+        }
+        private CreatedAtActionResult CreatedAsGetBreakfast(Breakfast breakfast)
+        {
+            return CreatedAtAction(
+                            actionName: nameof(GetBreakfast),
+                            routeValues: new { id = breakfast.Id },
+                            value: MapBreakfastResponse(breakfast)
+                            );
+        }
+        private static BreakfastResponse MapBreakfastResponse(Breakfast breakfast)
+        {
+            // extract method from the view
+            return new BreakfastResponse(
+                            breakfast.Id,
+                            breakfast.Name,
+                            breakfast.Description,
+                            breakfast.StartDateTime,
+                            breakfast.EndDateTime,
+                            breakfast.LastModifiedDateTime,
+                            breakfast.Savory,
+                            breakfast.Sweet
+                        );
         }
     }
 }

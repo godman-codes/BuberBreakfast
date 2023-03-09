@@ -12,6 +12,8 @@ namespace BuberBreakfast.ServiceErrors
                 description: "Breakfast not found"
                 );
 
+
+
             // this Error object is gotten from ErrorOr package
         }
     }
