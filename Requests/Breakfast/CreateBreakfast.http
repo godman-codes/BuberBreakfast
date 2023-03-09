@@ -1,6 +1,7 @@
-POST http://localhost:5058/breakfasts
+POST http://localhost:5058/breakfast
 Content-Type: application/json
 
+// make sure you oleave a space between the header and the body
 {
 
    "name": "Vegan Sunshine",
@@ -18,3 +19,6 @@ Content-Type: application/json
       ]
 
 }   
+
+###
+GET http://localhost:5058/Breakfast/99c57f9e-b8e1-47a8-8440-fccf453b6ed0

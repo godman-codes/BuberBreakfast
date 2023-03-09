@@ -2,12 +2,14 @@ using BuberBreakfast.Contracts.Breakfast;
 using BuberBreakfast.Models;
 using BuberBreakfast.Services.Breakfasts;
 using Microsoft.AspNetCore.Mvc;
+using BuberBreakfast.ServiceErrors;
+using ErrorOr;
 
 namespace BuberBreakfast.Controllers
 {
     [ApiController]
-    [Route("[Controller]")] // same as the previous line only that tis wil make the name of the class without controller as the parent route
-    // [Route("breakfasts")] //you can use this as the parent route and let other request suffix this rout at the end
+    // [Route("[Controller]")] // same as the previous line only that tis wil make the name of the class without controller as the parent route
+    [Route("breakfast")] //you can use this as the parent route and let other request suffix this rout at the end
     public class BreakfastController : ControllerBase
     {
         private readonly IBreakfastService _breakfastService;
@@ -60,7 +62,19 @@ namespace BuberBreakfast.Controllers
         [HttpGet("{id:guid}")]
         public IActionResult GetBreakfast(Guid id)
         {
-            Breakfast breakfast = _breakfastService.GetBreakfast(id);
+            Console.WriteLine("Getting breakfast");
+            // Breakfast breakfast = _breakfastService.GetBreakfast(id);
+            // call the service method getBreakfast with id as parameter to get the breakfast
+            ErrorOr<Breakfast> getBreakfastResult = _breakfastService.GetBreakfast(id);
+
+            if (getBreakfastResult.IsError && getBreakfastResult.FirstError == Errors.Breakfast.NotFound)
+            {
+                // the ErrorOr return value can be the values or a list of error so we can check which one withe 
+                // the above condition
+                return NotFound();
+            }
+            var breakfast = getBreakfastResult.Value;
+            // access the value of the breakfast with .Value property
 
             var response = new BreakfastResponse(
                 breakfast.Id,
@@ -72,6 +86,7 @@ namespace BuberBreakfast.Controllers
                 breakfast.Savory,
                 breakfast.Sweet
             );
+            // create a new response object with the destructured object and return it 
             return Ok(response);
         }
 
@@ -79,13 +94,29 @@ namespace BuberBreakfast.Controllers
         [HttpPut("{id:guid}")]
         public IActionResult UpsertBreakfast(Guid id, UpsertBreakfastRequest request)
         {
-            return Ok(request);
+            Console.WriteLine("Updating breakfast");
+            var breakfast = new Breakfast(
+                id,
+                request.Name,
+                request.Description,
+                request.StartDateTime,
+                request.EndDateTime,
+                DateTime.UtcNow,
+                request.Savory,
+                request.Sweet
+            );
+            _breakfastService.UpsertBreakfast(breakfast);
+
+            // TODO: return 201 if a new breakfast was created
+            return NoContent();
         }
 
         [HttpDelete("{id:guid}")]
         public IActionResult DeleteBreakfast(Guid id)
         {
-            return Ok(id);
+            Console.WriteLine("Deleting");
+            _breakfastService.DeleteBreakfast(id);
+            return NoContent();
         }
     }
 }

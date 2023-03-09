@@ -16,6 +16,9 @@ var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 // app variable for managing the request pipeline
 {
+    app.UseExceptionHandler("/error");
+    // the request pass through here and when there is an exception it redirects to the routes 
+    // specified here nad re execute the code
     app.UseHttpsRedirection();
 
     app.MapControllers();

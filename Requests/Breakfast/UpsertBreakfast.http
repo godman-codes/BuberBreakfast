@@ -1,12 +1,13 @@
-@id=00000000-0000-0000-0000-000000000000
+@id=a99db86a-9e6f-49a1-b535-69425e5e0e5b
 
-PUT http://localhost:5058/breakfasts/{{id}}
+PUT http://localhost:5058/breakfast/{{id}}
 Content-Type: application/json
+
 {
-   "name": "Vegan Sunshine",
-   "description": "Vegan everything! Join us for a healthy breakfast..",
+   "name": "Vegan Moonlight",
+   "description": "Vegan everything! Join us for a healthy Dinner..",
    "startDateTime": "2022-04-08T08:00:00",
    "endDateTime": "2022-04-08T11:00:00",
-   "savory": ["Oatmeal", "Avocado Toast", "Omelette", "Salad"],
+   "savory": ["Garri", "Ogbono", "Wine", "Fruits"],
    "Sweet": ["Cookie"]
 }

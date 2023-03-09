@@ -1,6 +1,7 @@
 
 using BuberBreakfast.Models;
-
+using ErrorOr;
+using BuberBreakfast.ServiceErrors;
 namespace BuberBreakfast.Services.Breakfasts
 {
     public class BreakfastService : IBreakfastService
@@ -18,12 +19,29 @@ namespace BuberBreakfast.Services.Breakfasts
             _breakfasts.Add(breakfast.Id, breakfast);
             // add the breakfast object and id to the dictionary
         }
-        public Breakfast GetBreakfast(Guid id)
+        public ErrorOr<Breakfast> GetBreakfast(Guid id)
         {
             // this method will take an id as a parameter and look through the dictionary
             // and return the object with that id
             // NOTE: we are overriding the method in the IBreakfastService interface class
-            return _breakfasts[id];
+            // return _breakfasts[id];
+            if (_breakfasts.TryGetValue(id, out var breakfast))
+            {
+                return breakfast;
+            }
+            // so if the object id pair not found in the dictionary 
+            // we return the not found error from the NotFound methods in the 
+            // error.Breakfast class
+            return Errors.Breakfast.NotFound;
+        }
+        public void UpsertBreakfast(Breakfast breakfast)
+        {
+            _breakfasts[breakfast.Id] = breakfast;
+        }
+
+        public void DeleteBreakfast(Guid id)
+        {
+            _breakfasts.Remove(id);
         }
     }
 }
