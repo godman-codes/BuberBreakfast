@@ -6,10 +6,11 @@ using ErrorOr;
 
 namespace BuberBreakfast.Controllers
 {
-    [ApiController]
-    // [Route("[Controller]")] // same as the previous line only that tis wil make the name of the class without controller as the parent route
-    [Route("breakfast")] //you can use this as the parent route and let other request suffix this rout at the end
-    public class BreakfastController : ControllerBase
+    // move to the ApiController class
+    // [ApiController]
+    // // [Route("[Controller]")] // same as the previous line only that tis wil make the name of the class without controller as the parent route
+    // [Route("breakfast")] //you can use this as the parent route and let other request suffix this rout at the end
+    public class BreakfastController : ApiController
     {
         private readonly IBreakfastService _breakfastService;
         // this line is specifying a variable for the breakfast service with type
@@ -67,7 +68,7 @@ namespace BuberBreakfast.Controllers
             ErrorOr<Breakfast> getBreakfastResult = _breakfastService.GetBreakfast(id);
 
             return getBreakfastResult.Match(breakfast => Ok(MapBreakfastResponse(breakfast)),
-            errors => Problem());
+            errors => Problem(errors));
             // the match function of the ErrorOr object maps the two values 
             // and error to what it is meant to be executed
 
