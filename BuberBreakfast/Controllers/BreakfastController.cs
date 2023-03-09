@@ -71,6 +71,7 @@ namespace BuberBreakfast.Controllers
             errors => Problem(errors));
             // the match function of the ErrorOr object maps the two values 
             // and error to what it is meant to be executed
+            // the problem handler function is customized and gotten from ApiController class
 
             // if (getBreakfastResult.IsError && getBreakfastResult.FirstError == Errors.Breakfast.NotFound)
             // {
