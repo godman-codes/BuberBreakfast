@@ -2,7 +2,6 @@ using BuberBreakfast.Contracts.Breakfast;
 using BuberBreakfast.Models;
 using BuberBreakfast.Services.Breakfasts;
 using Microsoft.AspNetCore.Mvc;
-using BuberBreakfast.ServiceErrors;
 using ErrorOr;
 
 namespace BuberBreakfast.Controllers
@@ -67,29 +66,39 @@ namespace BuberBreakfast.Controllers
             // call the service method getBreakfast with id as parameter to get the breakfast
             ErrorOr<Breakfast> getBreakfastResult = _breakfastService.GetBreakfast(id);
 
-            if (getBreakfastResult.IsError && getBreakfastResult.FirstError == Errors.Breakfast.NotFound)
-            {
-                // the ErrorOr return value can be the values or a list of error so we can check which one withe 
-                // the above condition
-                return NotFound();
-            }
-            var breakfast = getBreakfastResult.Value;
-            // access the value of the breakfast with .Value property
+            return getBreakfastResult.Match(breakfast => Ok(MapBreakfastResponse(breakfast)),
+            errors => Problem());
+            // the match function of the ErrorOr object maps the two values 
+            // and error to what it is meant to be executed
 
-            var response = new BreakfastResponse(
-                breakfast.Id,
-                breakfast.Name,
-                breakfast.Description,
-                breakfast.StartDateTime,
-                breakfast.EndDateTime,
-                breakfast.LastModifiedDateTime,
-                breakfast.Savory,
-                breakfast.Sweet
-            );
-            // create a new response object with the destructured object and return it 
-            return Ok(response);
+            // if (getBreakfastResult.IsError && getBreakfastResult.FirstError == Errors.Breakfast.NotFound)
+            // {
+            //     // the ErrorOr return value can be the values or a list of error so we can check which one withe 
+            //     // the above condition
+            //     return NotFound();
+            // }
+            // var breakfast = getBreakfastResult.Value;
+            // // access the value of the breakfast with .Value property
+
+            // BreakfastResponse response = MapBreakfastResponse(breakfast);
+            // // create a new response object with the destructured object and return it 
+            // return Ok(response);
         }
 
+        private static BreakfastResponse MapBreakfastResponse(Breakfast breakfast)
+        {
+            // extract method from the view
+            return new BreakfastResponse(
+                            breakfast.Id,
+                            breakfast.Name,
+                            breakfast.Description,
+                            breakfast.StartDateTime,
+                            breakfast.EndDateTime,
+                            breakfast.LastModifiedDateTime,
+                            breakfast.Savory,
+                            breakfast.Sweet
+                        );
+        }
 
         [HttpPut("{id:guid}")]
         public IActionResult UpsertBreakfast(Guid id, UpsertBreakfastRequest request)
