@@ -4,8 +4,8 @@ Content-Type: application/json
 // make sure you oleave a space between the header and the body
 {
 
-   "name": "Vegan Sunshine",
-   "description": "Vegan everything! Join us for a healthy breakfast..",
+   "name": "V",
+   "description": "",
    "startDateTime": "2022-04-08T08:00:00",
    "endDateTime": "2022-04-08T11:00:00",
    "savory": [

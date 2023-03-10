@@ -26,17 +26,21 @@ namespace BuberBreakfast.Controllers
         [HttpPost]
         public IActionResult CreateBreakfast(CreateBreakfastRequest request)
         {
-            var breakfast = new Breakfast(
-                Guid.NewGuid(),
+            ErrorOr<Breakfast> requestToBreakfastResult = Breakfast.create(
                 request.Name,
                 request.Description,
                 request.StartDateTime,
                 request.EndDateTime,
-                DateTime.UtcNow,
                 request.Savory,
                 request.Sweet
             );
             // TODO: save breakfast to database
+
+            if (requestToBreakfastResult.IsError)
+            {
+                return Problem(requestToBreakfastResult.Errors);
+            }
+            var breakfast = requestToBreakfastResult.Value;
 
             ErrorOr<Created> createdBreakfastResult = _breakfastService.CreateBreakfast(breakfast);
             // we call the createBreakfast method of the IBreakfastService and 
@@ -79,16 +83,23 @@ namespace BuberBreakfast.Controllers
         public IActionResult UpsertBreakfast(Guid id, UpsertBreakfastRequest request)
         {
             Console.WriteLine("Updating breakfast");
-            var breakfast = new Breakfast(
-                id,
+            ErrorOr<Breakfast> requestToUpdateBreakfastResult = Breakfast.create(
+
                 request.Name,
                 request.Description,
                 request.StartDateTime,
                 request.EndDateTime,
-                DateTime.UtcNow,
                 request.Savory,
-                request.Sweet
+                request.Sweet,
+                id
             );
+
+            if (requestToUpdateBreakfastResult.IsError)
+            {
+                return Problem(requestToUpdateBreakfastResult.Errors);
+            }
+
+            var breakfast = requestToUpdateBreakfastResult.Value;
             ErrorOr<UpsertedBreakfastResult> upsertBreakfastResult = _breakfastService.UpsertBreakfast(breakfast);
 
             // TODO: return 201 if a new breakfast was created

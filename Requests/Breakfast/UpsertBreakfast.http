@@ -1,10 +1,10 @@
-@id=a99db86a-9e6f-49a1-b535-69425e5e0e5b
+@id=fbc5ba32-7020-4375-9bd0-43048cabbdd3
 
 PUT http://localhost:5058/breakfast/{{id}}
 Content-Type: application/json
 
 {
-   "name": 1,
+   "name": "eba and ogbono",
    "description": "Vegan everything! Join us for a healthy Dinner..",
    "startDateTime": "2022-04-08T08:00:00",
    "endDateTime": "2022-04-08T11:00:00",

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using ErrorOr;
-
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace BuberBreakfast.Controllers
 {
@@ -11,6 +11,20 @@ namespace BuberBreakfast.Controllers
     {
         protected IActionResult Problem(List<Error> errors)
         {
+            if (errors.All(e => e.Type == ErrorType.Validation))
+            {
+                var modelStateDictionary = new ModelStateDictionary();
+
+                foreach (var error in errors)
+                {
+                    modelStateDictionary.AddModelError(error.Code, error.Description);
+                }
+                return ValidationProblem(modelStateDictionary);
+            }
+            if (errors.Any(e => e.Type == ErrorType.Unexpected))
+            {
+                return Problem();
+            }
             // this customized problem handler will take a list of errors and return the 
             // customized error message
             var firstError = errors[0];
